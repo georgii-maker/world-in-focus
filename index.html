@@ -1,743 +1,414 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>World In Focus | Community Gallery</title>
+  <title>World In Focus | Студия премодерации и галерея</title>
   <style>
+    /* ========== СБРОС И ГЛОБАЛЬНЫЕ НАСТРОЙКИ ========== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
+    :root {
+      --bg: #050505;
+      --text: #ffffff;
+      --accent: #ff3366;
+      --card-bg: rgba(20, 20, 25, 0.6);
+      --border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(0, 0, 0, 0.4);
+      --shadow-color: rgba(0, 0, 0, 0.6);
+    }
+
+    body.light {
+      --bg: #f4f1eb;
+      --text: #1a1a1a;
+      --card-bg: rgba(255, 255, 255, 0.7);
+      --border: rgba(0, 0, 0, 0.08);
+      --input-bg: rgba(255, 255, 255, 0.6);
+      --shadow-color: rgba(0, 0, 0, 0.08);
+    }
+
     body {
-      background: #080808;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-      transition: background 0.5s ease, color 0.5s ease;
+      transition: background-color 0.5s ease, color 0.5s ease;
     }
 
+    /* ========== ЗАДНИЙ ФОН И ГРАДИЕНТНЫЕ СФЕРЫ ========== */
     #blur-orbs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .blur-orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; }
-    .blur-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(150,155,210,0.5) 0%, transparent 70%); top: -150px; left: -150px; }
-    .blur-orb-2 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(120,130,210,0.4) 0%, transparent 70%); bottom: -200px; right: -200px; }
+    .blur-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.35; }
+    .blur-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(150,155,210,0.4) 0%, transparent 70%); top: -150px; left: -150px; }
+    .blur-orb-2 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(255,51,102,0.15) 0%, transparent 70%); bottom: -200px; right: -200px; }
 
-    body.light .blur-orb-1 { background: radial-gradient(circle, rgba(190,200,255,0.55) 0%, transparent 70%); }
-    body.light .blur-orb-2 { background: radial-gradient(circle, rgba(210,220,255,0.5) 0%, transparent 70%); }
+    body.light .blur-orb-1 { background: radial-gradient(circle, rgba(190,200,255,0.5) 0%, transparent 70%); }
+    body.light .blur-orb-2 { background: radial-gradient(circle, rgba(255,51,102,0.1) 0%, transparent 70%); }
 
-    body, body * { transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease; }
-
-    #atmo {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background: radial-gradient(ellipse 70% 55% at 50% 100%, rgba(100,105,160,0.22) 0%, transparent 100%),
-                  radial-gradient(ellipse 50% 40% at 20% 60%, rgba(130,130,190,0.12) 0%, transparent 100%),
-                  radial-gradient(ellipse 40% 35% at 80% 30%, rgba(110,115,175,0.10) 0%, transparent 100%);
-    }
-
-    /* ========== БАЗОВЫЕ СТИЛИ КНОПОК ========== */
+    /* ========== ФИКСИРОВАННАЯ ПАНЕЛЬ НАВИГАЦИИ ========== */
+    .nav-bar { position: fixed; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; z-index: 200; pointer-events: none; }
+    .nav-group { display: flex; gap: 10px; pointer-events: auto; }
+    
     .top-btn {
-      position: fixed; top: 20px; z-index: 200;
-      border: none; border-radius: 50%; width: 46px; height: 46px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(20px) saturate(150%);
-      border: 1px solid rgba(255,255,255,0.18);
-      box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 4px 16px rgba(0,0,0,0.3);
-      transition: all 0.3s;
+      border: none; border-radius: 14px; height: 46px; padding: 0 18px;
+      display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+      background: var(--card-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--border); color: var(--text);
+      font-weight: 600; font-size: 13px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 16px var(--shadow-color);
     }
-    .top-btn:hover { background: rgba(255,255,255,0.2); }
-    .top-btn svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 1.5; }
-    #themeBtn { right: 132px; }
-    #adminBtn { right: 76px; }
-    #langBtn { right: 20px; }
-    #submitBtn {
-      left: 16px; right: auto; width: 160px; height: 46px;
-      padding: 0 14px; border-radius: 12px; font-size: 12px; font-weight: 600;
-      white-space: nowrap; text-align: center; font-family: inherit; color: #fff;
-      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); cursor: pointer;
-    }
-    #submitBtn:hover { background: rgba(255,255,255,0.18); }
+    .top-btn:hover { transform: translateY(-2px); background: var(--text); color: var(--bg); }
+    .top-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .circle-btn { width: 46px; padding: 0; border-radius: 50%; }
 
-    /* ========== ВЫПАДАЮЩИЙ СПИСОК ЯЗЫКОВ ========== */
-    .lang-dropdown {
-      position: fixed; top: 74px; right: 20px; z-index: 200;
-      border-radius: 18px; overflow: hidden; flex-direction: column; min-width: 168px;
-      transform-origin: top right; transform: scale(0.8) translateY(-10px); opacity: 0; pointer-events: none;
-      display: flex; transition: transform 0.32s, opacity 0.22s;
-      background: rgba(20,20,22,0.9); backdrop-filter: blur(32px);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
-    .lang-dropdown.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
-    .lang-option { padding: 13px 20px; cursor: pointer; font-size: 15px; font-weight: 500; color: #fff; display: flex; align-items: center; gap: 10px; background: none; width: 100%; border: none; text-align: left; }
-    .lang-option:hover { background: rgba(255,255,255,0.09); }
-    .lang-option.active { font-weight: 700; }
-    .lang-option .flag { font-size: 18px; }
+    /* ========== ГЛАВНЫЙ ЭКРАН (HERO) ========== */
+    #page-hero { position: relative; z-index: 1; min-height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; }
+    .hero-title { font-size: clamp(44px, 12vw, 80px); font-weight: 900; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 4px 30px rgba(0,0,0,0.2); }
+    .hero-sub { font-size: 14px; opacity: 0.5; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 35px; }
+    
+    .cta-group { display: flex; gap: 15px; width: 100%; max-width: 450px; }
+    .btn-main { flex: 1; text-align: center; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; text-decoration: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .btn-primary { background: var(--text); color: var(--bg); border: none; box-shadow: 0 8px 24px var(--shadow-color); }
+    .btn-primary:hover { transform: translateY(-2px); opacity: 0.95; }
+    .btn-secondary { background: var(--card-bg); color: var(--text); border: 1px solid var(--border); backdrop-filter: blur(10px); }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); }
 
-    /* ========== МОДАЛЬНОЕ ОКНО АДМИНКИ ========== */
-    .admin-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); align-items: center; justify-content: center; padding: 24px; }
-    .admin-modal.open { display: flex; }
-    .admin-card { background: rgba(22,22,26,0.98); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; padding: 36px 28px; max-width: 380px; width: 100%; text-align: center; }
-    .admin-card h3 { font-size: 22px; margin-bottom: 12px; color: #fff; }
-    .admin-card input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: #fff; font-size: 15px; margin: 16px 0; }
-    .admin-card button { width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 15px; font-weight: 600; background: rgba(255,255,255,0.1); color: #fff; cursor: pointer; }
-    .admin-card button:hover { background: rgba(255,255,255,0.18); }
-    .admin-error { color: #f87171; font-size: 13px; margin-top: 12px; }
+    /* ========== КИНЕМАТОГРАФИЧНАЯ ГАЛЕРЕЯ ========== */
+    #page-gallery { position: relative; z-index: 1; max-width: 1300px; margin: 0 auto; padding: 0 20px 100px; }
+    .gallery-label { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.4; margin-bottom: 25px; display: block; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+    
+    .gallery-item { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 4/3; background: var(--card-bg); border: 1px solid var(--border); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .gallery-item:hover { transform: translateY(-5px); box-shadow: 0 20px 40px var(--shadow-color); }
+    .gallery-item:hover img { transform: scale(1.04); }
+    
+    .item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 22px; opacity: 0; transition: opacity 0.3s ease; }
+    .gallery-item:hover .item-overlay { opacity: 1; }
+    .item-overlay h4 { color: #fff; font-size: 16px; margin-bottom: 4px; font-weight: 600; }
+    .item-overlay span { color: rgba(255,255,255,0.5); font-size: 12px; }
 
-    /* ========== СТИЛИ ДЛЯ АДМИН-ПАНЕЛИ ========== */
-    .admin-panel-container { max-width: 800px; margin: 50px auto; padding: 30px; background: rgba(18,18,20,0.95); border-radius: 24px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
-    .admin-panel-container h1, .admin-panel-container h2 { margin-bottom: 20px; color: #fff; }
-    .admin-pending-item, .admin-approved-item { border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 12px; padding: 12px; display: flex; gap: 16px; align-items: center; }
-    .admin-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
-    .admin-info { flex: 1; }
-    .admin-date { font-size: 11px; color: rgba(255,255,255,0.4); }
-    .admin-approve { padding: 8px 16px; background: #4ade80; color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 8px; }
-    .admin-reject { padding: 8px 16px; background: #f87171; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
-    .admin-remove { padding: 6px 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 6px; cursor: pointer; color: #fff; }
+    /* ========== УНИВЕРСАЛЬНЫЙ СТИЛЬ МОДАЛЬНЫХ ОКОН ========== */
+    .modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); align-items: center; justify-content: center; padding: 20px; }
+    .modal.open { display: flex; }
+    .modal-card { background: var(--bg); border: 1px solid var(--border); border-radius: 24px; padding: 35px 30px; max-width: 500px; width: 100%; position: relative; box-shadow: 0 25px 50px var(--shadow-color); animation: modalAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .modal-card h3 { font-size: 22px; margin-bottom: 15px; font-weight: 800; }
+    
+    input, textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); margin-bottom: 12px; font-family: inherit; font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    input:focus, textarea:focus { border-color: var(--text); box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
+    
+    .modal-submit { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; background: var(--text); color: var(--bg); cursor: pointer; transition: opacity 0.2s; }
+    .modal-submit:hover { opacity: 0.9; }
+    .modal-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .modal-close { background: none; border: none; color: var(--text); opacity: 0.5; position: absolute; top: 24px; right: 24px; cursor: pointer; font-size: 18px; transition: opacity 0.2s; }
+    .modal-close:hover { opacity: 1; }
 
-    /* ========== СВЕТЛАЯ ТЕМА - ВСЕ ИСПРАВЛЕНИЯ ========== */
-    body.light {
-      background: #f0ede8;
-      color: #1a1a1a;
-    }
-    body.light #atmo {
-      background: radial-gradient(ellipse 70% 55% at 50% 100%, rgba(180,190,230,0.25) 0%, transparent 100%),
-                  radial-gradient(ellipse 50% 40% at 20% 60%, rgba(200,210,240,0.18) 0%, transparent 100%),
-                  radial-gradient(ellipse 40% 35% at 80% 30%, rgba(190,200,235,0.15) 0%, transparent 100%);
-    }
-    body.light .top-btn {
-      background: rgba(0,0,0,0.08);
-      border-color: rgba(0,0,0,0.15);
-      box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset, 0 4px 16px rgba(0,0,0,0.1);
-    }
-    body.light .top-btn svg {
-      stroke: #1a1a1a;
-    }
-    body.light .top-btn:hover {
-      background: rgba(0,0,0,0.15);
-    }
-    body.light #submitBtn {
-      color: #1a1a1a;
-      background: rgba(0,0,0,0.08);
-      border-color: rgba(0,0,0,0.15);
-    }
-    body.light #submitBtn:hover {
-      background: rgba(0,0,0,0.15);
-    }
-    body.light .lang-dropdown {
-      background: rgba(238,234,228,0.97);
-      border-color: rgba(0,0,0,0.1);
-    }
-    body.light .lang-option {
-      color: #1a1a1a;
-    }
-    body.light .lang-option:hover {
-      background: rgba(0,0,0,0.08);
-    }
-    body.light .hero-sub {
-      color: rgba(0,0,0,0.5);
-    }
-    body.light .hero-title {
-      text-shadow: 0 0 40px rgba(0,0,0,0.08), 0 0 80px rgba(0,0,0,0.03);
-      color: #1a1a1a;
-    }
-    body.light .btn-join {
-      background: #1a1a1a;
-      color: #fff;
-    }
-    body.light .btn-about {
-      background: rgba(0,0,0,0.08);
-      color: #1a1a1a;
-      border-color: rgba(0,0,0,0.2);
-    }
-    body.light .btn-about:hover {
-      background: rgba(0,0,0,0.15);
-    }
-    body.light .scroll-hint svg {
-      stroke: rgba(0,0,0,0.4);
-    }
-    body.light .scroll-hint span {
-      color: rgba(0,0,0,0.4);
-    }
-    body.light .about-card {
-      background: rgba(255,255,255,0.85);
-      border-color: rgba(0,0,0,0.1);
-    }
-    body.light .about-title {
-      color: #1a1a1a;
-    }
-    body.light .about-text {
-      color: #333;
-    }
-    body.light .about-label {
-      color: rgba(0,0,0,0.5);
-    }
-    body.light .about-section {
-      border-bottom-color: rgba(0,0,0,0.1);
-    }
-    body.light #page-footer {
-      background: #f5f2ee;
-      border-top-color: rgba(0,0,0,0.08);
-    }
-    body.light .footer-contact-text {
-      color: rgba(0,0,0,0.5);
-    }
-    body.light .footer-copy {
-      color: rgba(0,0,0,0.35);
-    }
-    body.light .btn-social {
-      background: rgba(0,0,0,0.08);
-      border-color: rgba(0,0,0,0.15);
-    }
-    body.light .btn-social svg {
-      stroke: #1a1a1a;
-    }
-    body.light .btn-social:hover {
-      background: rgba(0,0,0,0.15);
-    }
-    body.light .upload-card {
-      background: rgba(245,242,238,0.98);
-      border-color: rgba(0,0,0,0.1);
-    }
-    body.light .upload-card h3 {
-      color: #1a1a1a;
-    }
-    body.light .upload-card p {
-      color: rgba(0,0,0,0.6);
-    }
-    body.light .upload-size-info {
-      color: rgba(0,0,0,0.5);
-      background: rgba(0,0,0,0.05);
-    }
-    body.light .upload-area {
-      border-color: rgba(0,0,0,0.3);
-    }
-    body.light .upload-area svg {
-      stroke: #1a1a1a;
-    }
-    body.light .upload-area p {
-      color: #1a1a1a;
-    }
-    body.light .upload-close {
-      background: rgba(0,0,0,0.1);
-      color: #1a1a1a;
-    }
-    body.light .upload-close:hover {
-      background: rgba(0,0,0,0.18);
-    }
-    body.light .gallery-label {
-      color: rgba(0,0,0,0.5);
-    }
-    body.light .empty-gallery {
-      color: rgba(0,0,0,0.5);
-    }
-    body.light .admin-card {
-      background: rgba(245,242,238,0.98);
-      border-color: rgba(0,0,0,0.1);
-    }
-    body.light .admin-card h3 {
-      color: #1a1a1a;
-    }
-    body.light .admin-card input {
-      background: rgba(0,0,0,0.05);
-      color: #1a1a1a;
-      border-color: rgba(0,0,0,0.2);
-    }
-    body.light .admin-panel-container {
-      background: rgba(245,242,238,0.95);
-      border-color: rgba(0,0,0,0.1);
-      color: #1a1a1a;
-    }
-    body.light .admin-panel-container h1,
-    body.light .admin-panel-container h2 {
-      color: #1a1a1a;
-    }
-    body.light .admin-pending-item,
-    body.light .admin-approved-item {
-      border-color: rgba(0,0,0,0.1);
-    }
-    body.light .admin-date {
-      color: rgba(0,0,0,0.5);
-    }
-    body.light .admin-remove {
-      background: rgba(0,0,0,0.1);
-      color: #1a1a1a;
-    }
-    body.light #page-hero::before {
-      background: linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, transparent 100%);
-    }
+    /* ========== АДМИН-ПАНЕЛЬ И ПЕРЕКЛЮЧАТЕЛИ ВКЛАДОК ========== */
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .tab-btn { background: none; border: none; color: var(--text); opacity: 0.5; cursor: pointer; padding: 6px 12px; font-weight: 600; font-size: 14px; transition: opacity 0.2s; }
+    .tab-btn.active { opacity: 1; border-bottom: 2px solid var(--text); }
+    
+    .admin-list { max-height: 320px; overflow-y: auto; padding-right: 5px; }
+    .admin-item { display: flex; align-items: center; gap: 12px; background: var(--card-bg); padding: 10px; border-radius: 14px; margin-bottom: 8px; border: 1px solid var(--border); }
+    .admin-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+    .admin-item-info { flex: 1; min-width: 0; }
+    .admin-item-info h5 { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 4px; }
+    
+    .btn-group { display: flex; gap: 6px; }
+    .adm-btn { border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: transform 0.1s, opacity 0.2s; }
+    .adm-btn:hover { opacity: 0.9; }
+    .adm-btn:active { transform: scale(0.95); }
+    .btn-approve { background: #22c55e; color: #fff; }
+    .btn-reject { background: #ef4444; color: #fff; }
 
-    /* ========== ОСНОВНЫЕ СТИЛИ ========== */
-    #page-hero {
-      position: relative; z-index: 1; min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; text-align: center;
-      padding: 40px 28px 80px; gap: 16px;
+    #page-footer { text-align: center; padding: 40px; border-top: 1px solid var(--border); font-size: 12px; opacity: 0.4; letter-spacing: 0.05em; }
+
+    @keyframes modalAppear {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
-    #page-hero::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0;
-      height: 220px; background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 100%);
-      z-index: 0; pointer-events: none;
-    }
-    .hero-title { font-size: clamp(52px, 15vw, 76px); font-weight: 800; letter-spacing: -0.02em; line-height: 1; animation: fadeUp 0.9s 0.1s both; text-shadow: 0 0 40px rgba(255,255,255,0.08), 0 0 80px rgba(255,255,255,0.03); }
-    .hero-sub { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.45); letter-spacing: 0.06em; animation: fadeUp 0.9s 0.25s both; }
-
-    .btn-join, .btn-about {
-      width: 100%; max-width: 320px; padding: 18px 0; font-size: 18px; font-weight: 700; border-radius: 20px;
-      cursor: pointer; text-align: center; display: block; text-decoration: none;
-      opacity: 0; transform: translateY(20px); animation: fadeUp 0.9s 0.4s both;
-      position: relative; overflow: hidden; transition: transform 0.35s, box-shadow 0.35s;
-    }
-    .btn-join { color: #000; background: rgba(255,255,255,0.92); backdrop-filter: blur(24px); box-shadow: 0 2px 0 rgba(255,255,255,0.9) inset, 0 8px 32px rgba(255,255,255,0.12); }
-    .btn-about { color: #fff; background: rgba(255,255,255,0.07); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.22); animation-delay: 0.52s; }
-    .btn-join::before, .btn-about::before { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
-    .btn-join:hover::before, .btn-about:hover::before { left: 130%; }
-    .btn-join:hover { transform: scale(1.035) translateY(-2px); box-shadow: 0 20px 60px rgba(255,255,255,0.24); }
-    .btn-about:hover { transform: scale(1.03) translateY(-2px); background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.35); }
-
-    .scroll-hint { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 5px; opacity: 0; animation: fadeIn 1s 1.2s both; }
-    .scroll-hint span { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.4; }
-    .scroll-hint svg { width: 18px; height: 18px; stroke: rgba(255,255,255,0.4); fill: none; stroke-width: 2; animation: arrowBounce 2s 1.8s infinite; }
-    @keyframes arrowBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
-
-    #page-about { position: relative; z-index: 1; padding: 60px 24px 60px; }
-    .about-card { border-radius: 26px; padding: 40px 28px; max-width: 520px; margin: 0 auto; background: rgba(18,18,20,0.65); backdrop-filter: blur(32px); border: 1px solid rgba(255,255,255,0.1); opacity: 0; transform: translateY(50px) scale(0.98); transition: opacity 0.8s, transform 0.8s; }
-    .about-card.visible { opacity: 1; transform: translateY(0) scale(1); }
-    .about-title { font-size: clamp(28px, 8vw, 40px); font-weight: 800; margin-bottom: 28px; text-align: center; letter-spacing: -0.01em; }
-    .about-section { padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; gap: 8px; }
-    .about-section:last-child { border-bottom: none; }
-    .about-label { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
-    .about-text { font-size: clamp(14px, 3.8vw, 16px); font-weight: 500; line-height: 1.7; color: rgba(255,255,255,0.85); }
-
-    #page-gallery { position: relative; z-index: 1; padding: 40px 24px 80px; }
-    .gallery-label { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); max-width: 1200px; margin: 0 auto 20px; }
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-    .gallery-item { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; background: rgba(255,255,255,0.05); cursor: pointer; transition: transform 0.3s; }
-    .gallery-item:hover { transform: scale(1.02); }
-    .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .empty-gallery { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.4); font-size: 14px; }
-
-    #page-footer { position: relative; z-index: 1; padding: 40px 24px 48px; display: flex; flex-direction: column; align-items: center; gap: 14px; border-top: 1px solid rgba(255,255,255,0.07); background: #0a0a0e; }
-    .social-btns { display: flex; gap: 12px; }
-    .btn-social { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(16px); transition: all 0.25s; }
-    .btn-social:hover { background: rgba(255,255,255,0.18); transform: scale(1.08); }
-    .btn-social svg { width: 19px; height: 19px; stroke: #fff; }
-    .footer-contact-text { font-size: 12px; color: rgba(255,255,255,0.4); text-align: center; }
-    .footer-copy { font-size: 10px; color: rgba(255,255,255,0.25); text-align: center; }
-
-    /* ========== МОДАЛЬНОЕ ОКНО ЗАГРУЗКИ ========== */
-    .upload-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); align-items: center; justify-content: center; padding: 24px; }
-    .upload-modal.open { display: flex; }
-    .upload-card { background: rgba(22,22,26,0.98); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; padding: 36px 28px; max-width: 400px; width: 100%; text-align: center; }
-    .upload-card h3 { font-size: 22px; margin-bottom: 12px; color: #fff; }
-    .upload-card p { color: rgba(255,255,255,0.5); margin-bottom: 24px; font-size: 14px; line-height: 1.5; }
-    .upload-size-info { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 8px; margin: -12px 0 16px; font-size: 12px; color: rgba(255,255,255,0.5); }
-    .upload-area { border: 2px dashed rgba(255,255,255,0.3); border-radius: 20px; padding: 40px 20px; margin-bottom: 24px; cursor: pointer; transition: all 0.3s; }
-    .upload-area:hover { border-color: #fff; background: rgba(255,255,255,0.05); }
-    .upload-area svg { width: 48px; height: 48px; stroke: #fff; margin-bottom: 12px; }
-    .upload-area p { color: rgba(255,255,255,0.7); }
-    .upload-status { margin-top: 16px; font-size: 13px; color: rgba(255,255,255,0.6); }
-    .upload-success { color: #4ade80; }
-    .upload-error { color: #f87171; }
-    .upload-close { width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 15px; font-weight: 600; background: rgba(255,255,255,0.1); color: #fff; cursor: pointer; margin-top: 12px; }
-    .upload-close:hover { background: rgba(255,255,255,0.18); }
-
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeIn { to { opacity: 1; } }
   </style>
 </head>
 <body>
 
 <div id="blur-orbs"><div class="blur-orb blur-orb-1"></div><div class="blur-orb blur-orb-2"></div></div>
-<div id="atmo"></div>
 
-<button class="top-btn" id="submitBtn" onclick="openUploadModal()">Propose photo</button>
-<button class="top-btn" id="themeBtn" onclick="toggleTheme()">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-</button>
-<button class="top-btn" id="adminBtn" onclick="openAdminModal()">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1L3 5v6c0 5.5 9 12 9 12s9-6.5 9-12V5l-9-4z"/><path d="M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
-</button>
-<button class="top-btn" id="langBtn" onclick="toggleLang()">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-</button>
-
-<div class="lang-dropdown" id="langDropdown">
-  <button class="lang-option active" onclick="setLang('ru')"><span class="flag">🇷🇺</span> Русский</button>
-  <button class="lang-option" onclick="setLang('en')"><span class="flag">🇬🇧</span> English</button>
-</div>
-
-<div id="adminModal" class="admin-modal">
-  <div class="admin-card">
-    <h3>Admin access</h3>
-    <input type="password" id="adminPasswordInput" placeholder="Enter password">
-    <button onclick="checkAdminLogin()">Login</button>
-    <div id="adminError" class="admin-error"></div>
+<!-- ФИКСИРОВАННЫЙ НАВИГАЦИОННЫЙ БАР -->
+<div class="nav-bar">
+  <div class="nav-group">
+    <button class="top-btn" onclick="openModal('orderModal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg>
+      <span>Заказать съёмку</span>
+    </button>
+  </div>
+  <div class="nav-group">
+    <button class="top-btn" onclick="openModal('uploadModal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      <span>Предложить фото</span>
+    </button>
+    <button class="top-btn circle-btn" onclick="toggleTheme()" title="Сменить тему">🌗</button>
+    <button class="top-btn circle-btn" onclick="openAdmin()" title="Панель модерации">🛡️</button>
   </div>
 </div>
 
+<!-- ГЛАВНЫЙ ЭКРАН (HERO) -->
 <div id="page-hero">
   <h1 class="hero-title">World In Focus</h1>
-  <p class="hero-sub" id="heroSub">Кадры, которые говорят сами за себя</p>
-  <a href="https://t.me/WorldInFocus" target="_blank" class="btn-join" id="joinBtn">Присоединиться</a>
-  <button class="btn-about" id="aboutBtn" onclick="scrollToAbout()">О проекте</button>
-  <div class="scroll-hint"><span id="scrollText">ИССЛЕДОВАТЬ</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+  <p class="hero-sub">Пейзажная фотография и открытая предложка</p>
+  <div class="cta-group">
+    <a href="#page-gallery" class="btn-main btn-primary">Смотреть портфолио</a>
+  </div>
 </div>
 
-<section id="page-about">
-  <div class="about-card" id="aboutCard">
-    <h2 class="about-title" id="aboutTitle">О проекте</h2>
-    <div class="about-sections">
-      <div class="about-section"><span class="about-label" id="label1">Философия</span><p class="about-text" id="text1">Мы верим, что фотография — универсальный язык. Каждый кадр рассказывает историю без границ.</p></div>
-      <div class="about-section"><span class="about-label" id="label2">Жанры</span><p class="about-text" id="text2">Уличная фотография, кинематографичные пейзажи, портретные этюды — всегда искренне, без постановки.</p></div>
-      <div class="about-section"><span class="about-label" id="label3">Принцип</span><p class="about-text" id="text3">Никаких фильтров, никакого искусственного света. Только то, что увидел глаз.</p></div>
+<!-- ГАЛЕРЕЯ КАРТИНOК -->
+<div id="page-gallery">
+  <span class="gallery-label">Портфолио</span>
+  <div class="gallery-grid" id="galleryGrid">
+    <!-- Сюда динамически загрузятся фото с сервера на телефоне -->
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: ЗАКАЗ СЪЁМКИ -->
+<div id="orderModal" class="modal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('orderModal')">✕</button>
+    <h3>Заказать съёмку</h3>
+    <form id="orderForm">
+      <input type="text" id="orderName" placeholder="Ваше имя" required>
+      <input type="text" id="orderTg" placeholder="Ваш Telegram (@username)" required>
+      <textarea id="orderMsg" placeholder="Какая съёмка вас интересует? Напишите ваши идеи..." rows="4" required></textarea>
+      <button type="submit" class="modal-submit" id="orderSubmitBtn">Отправить заявку</button>
+    </form>
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: ПРЕДЛОЖИТЬ ФОТО -->
+<div id="uploadModal" class="modal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('uploadModal')">✕</button>
+    <h3>Предложить кадр</h3>
+    <p style="font-size: 13px; opacity: 0.6; margin-bottom: 15px; line-height: 1.4;">Фото попадет в общую ленту только после проверки и ручного одобрения автором в админ-панели.</p>
+    <form id="uploadForm">
+      <input type="text" id="uploadTitle" placeholder="Параметры съемки (Камера, линза, f/, ISO)" required>
+      <input type="file" id="uploadFile" accept="image/*" required>
+      <button type="submit" class="modal-submit" id="uploadSubmitBtn">Отправить на модерацию</button>
+    </form>
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: АДМИНКА С ПРЕМОДЕРАЦИЕЙ -->
+<div id="adminModal" class="modal">
+  <div class="modal-card" id="adminAuthCard">
+    <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
+    <h3>Доступ в панель</h3>
+    <input type="password" id="adminPassword" placeholder="Введите мастер-пароль">
+    <button class="modal-submit" onclick="loginAdmin()">Войти</button>
+  </div>
+  
+  <div class="modal-card" id="adminPanelCard" style="display:none; max-width: 600px;">
+    <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
+    <h3>Модерация галереи</h3>
+    
+    <div class="admin-tabs">
+      <button class="tab-btn active" id="tabModBtn" onclick="switchTab('moderation')">Предложка</button>
+      <button class="tab-btn" id="tabMainBtn" onclick="switchTab('main')">Опубликованные</button>
     </div>
-  </div>
-</section>
 
-<section id="page-gallery">
-  <p class="gallery-label" id="galleryLabel">Галерея сообщества — одобренные фото</p>
-  <div id="gallery-grid" class="gallery-grid">
-    <div class="empty-gallery" id="emptyGallery">Нет фотографий. Станьте первым!</div>
-  </div>
-</section>
-
-<footer id="page-footer">
-  <div class="social-btns">
-    <a href="https://t.me/WorldInFocus" class="btn-social"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></a>
-    <a href="https://instagram.com/worldinfocus" class="btn-social"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="3"/><path d="M17.5 6.5h.01"/></svg></a>
-    <a href="mailto:hello@worldinfocus.com" class="btn-social"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg></a>
-  </div>
-  <div class="footer-contact-text" id="footerContact">hello@worldinfocus.com</div>
-  <div class="footer-copy" id="footerCopy">2025 World In Focus — фотографии сообщества</div>
-</footer>
-
-<div id="uploadModal" class="upload-modal">
-  <div class="upload-card">
-    <h3 id="modalTitle">Propose a photo</h3>
-    <p id="modalText">Your image will be sent for moderation. Only the best will be published.</p>
-    <div class="upload-size-info" id="sizeInfo">Maximum file size: 10 MB</div>
-    <div class="upload-area" onclick="document.getElementById('photoInput').click()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-      <p id="uploadClickText">Click to select photo</p>
-      <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="uploadPhoto(this)">
+    <div class="admin-list" id="adminList">
+      <!-- Список динамически обновляется через JavaScript -->
     </div>
-    <div id="uploadStatus" class="upload-status"></div>
-    <button class="upload-close" id="modalClose" onclick="closeUploadModal()">Close</button>
+    <button class="modal-submit" onclick="logoutAdmin()" style="background:#333; color:#fff; margin-top:15px;">Выйти из панели</button>
   </div>
+</div>
+
+<div id="page-footer">
+  &copy; 2026 WORLD IN FOCUS. POWERED BY SNAPDRAGON 8 GEN 2 SERVER.
 </div>
 
 <script>
-  // ========== CLOUDINARY CONFIGURATION ==========
-  const CLOUD_NAME = 'dnr2n82dh';
-  const UPLOAD_PRESET = 'worldinfocus';
-  const ADMIN_PASSWORD = 'admin123';
+  // ==========================================
+  //  ВСТАВЬТЕ СЮДА ВАШУ ССЫЛКУ ИЗ LOCAL TUNNEL
+  // ==========================================
+  // Обязательно со слэшем в конце (например: "https://your-tunnel.loca.lt/")
+  const API_URL = "https://ВАШ_ТУННЕЛЬ.loca.lt/"; 
   
-  let approvedPhotos = JSON.parse(localStorage.getItem('wifi_approved') || '[]');
-  let pendingPhotos = JSON.parse(localStorage.getItem('wifi_pending') || '[]');
-  let currentLang = 'ru';
-  
-  // ========== ЛОКАЛИЗАЦИЯ ==========
-  const translations = {
-    ru: {
-      heroSub: 'Кадры, которые говорят сами за себя',
-      join: 'Присоединиться',
-      about: 'О проекте',
-      scroll: 'ИССЛЕДОВАТЬ',
-      aboutTitle: 'О проекте',
-      label1: 'Философия',
-      text1: 'Мы верим, что фотография — универсальный язык. Каждый кадр рассказывает историю без границ.',
-      label2: 'Жанры',
-      text2: 'Уличная фотография, кинематографичные пейзажи, портретные этюды — всегда искренне, без постановки.',
-      label3: 'Принцип',
-      text3: 'Никаких фильтров, никакого искусственного света. Только то, что увидел глаз.',
-      galleryLabel: 'Галерея сообщества — одобренные фото',
-      emptyGallery: 'Нет фотографий. Станьте первым!',
-      footerContact: 'hello@worldinfocus.com',
-      footerCopy: '2025 World In Focus — фотографии сообщества',
-      submitBtn: 'Предложить фото',
-      modalTitle: 'Предложить фото',
-      modalText: 'Ваше фото будет отправлено на модерацию. Лучшие будут опубликованы.',
-      sizeInfo: 'Максимальный размер файла: 10 МБ',
-      uploadClick: 'Нажмите, чтобы выбрать фото',
-      modalClose: 'Закрыть',
-      uploading: 'Загрузка...',
-      uploadSuccess: 'Фото отправлено на модерацию',
-      uploadError: 'Ошибка загрузки. Попробуйте снова'
-    },
-    en: {
-      heroSub: 'Through the lens — stories without words',
-      join: 'Join the journey',
-      about: 'Discover more',
-      scroll: 'EXPLORE',
-      aboutTitle: 'About the project',
-      label1: 'Vision',
-      text1: 'We believe in photography as a universal language. Each frame tells a story beyond borders.',
-      label2: 'Genres',
-      text2: 'Street photography, cinematic landscapes, portrait studies — always authentic, never staged.',
-      label3: 'Ethos',
-      text3: 'No filters, no artificial light. What you see is what the eye captured.',
-      galleryLabel: 'Community gallery — approved photos',
-      emptyGallery: 'No photos yet. Be the first to contribute!',
-      footerContact: 'hello@worldinfocus.com',
-      footerCopy: '2025 World In Focus — community-driven photography',
-      submitBtn: 'Propose photo',
-      modalTitle: 'Propose a photo',
-      modalText: 'Your image will be sent for moderation. Only the best will be published.',
-      sizeInfo: 'Maximum file size: 10 MB',
-      uploadClick: 'Click to select photo',
-      modalClose: 'Close',
-      uploading: 'Uploading...',
-      uploadSuccess: 'Photo submitted for moderation',
-      uploadError: 'Upload failed. Please try again'
-    }
-  };
-  
-  function setLang(lang) {
-    currentLang = lang;
-    const t = translations[lang];
-    document.getElementById('heroSub').innerText = t.heroSub;
-    document.getElementById('joinBtn').innerText = t.join;
-    document.getElementById('aboutBtn').innerText = t.about;
-    document.getElementById('scrollText').innerText = t.scroll;
-    document.getElementById('aboutTitle').innerText = t.aboutTitle;
-    document.getElementById('label1').innerText = t.label1;
-    document.getElementById('text1').innerText = t.text1;
-    document.getElementById('label2').innerText = t.label2;
-    document.getElementById('text2').innerText = t.text2;
-    document.getElementById('label3').innerText = t.label3;
-    document.getElementById('text3').innerText = t.text3;
-    document.getElementById('galleryLabel').innerText = t.galleryLabel;
-    const emptyEl = document.getElementById('emptyGallery');
-    if (emptyEl) emptyEl.innerText = t.emptyGallery;
-    document.getElementById('footerContact').innerText = t.footerContact;
-    document.getElementById('footerCopy').innerText = t.footerCopy;
-    document.getElementById('submitBtn').innerHTML = t.submitBtn;
-    document.getElementById('modalTitle').innerText = t.modalTitle;
-    document.getElementById('modalText').innerText = t.modalText;
-    document.getElementById('sizeInfo').innerText = t.sizeInfo;
-    document.getElementById('uploadClickText').innerText = t.uploadClick;
-    document.getElementById('modalClose').innerText = t.modalClose;
-    
-    document.querySelectorAll('.lang-option').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.lang-option[onclick="setLang('${lang}')"]`).classList.add('active');
-    localStorage.setItem('wifi_lang', lang);
-  }
-  
-  function toggleLang() {
-    document.getElementById('langDropdown').classList.toggle('open');
-  }
-  
-  // ========== АДМИН-ПАНЕЛЬ ==========
-  function openAdminModal() {
-    document.getElementById('adminModal').classList.add('open');
-    document.getElementById('adminError').innerHTML = '';
-    document.getElementById('adminPasswordInput').value = '';
-  }
-  
-  function closeAdminModal() {
-    document.getElementById('adminModal').classList.remove('open');
-  }
-  
-  function checkAdminLogin() {
-    const pass = document.getElementById('adminPasswordInput').value;
-    if (pass === ADMIN_PASSWORD) {
-      closeAdminModal();
-      showAdminPanel();
-    } else {
-      document.getElementById('adminError').innerHTML = 'Wrong password';
-    }
-  }
-  
-  function showAdminPanel() {
-    document.body.innerHTML = `
-      <div class="admin-panel-container">
-        <h1>Admin panel</h1>
-        <div id="adminContent"></div>
-        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: #fff; cursor: pointer;">Exit to site</button>
-      </div>
-    `;
-    renderAdminPanel();
-  }
-  
-  function renderAdminPanel() {
-    const pending = JSON.parse(localStorage.getItem('wifi_pending') || '[]');
-    const approved = JSON.parse(localStorage.getItem('wifi_approved') || '[]');
-    const content = document.getElementById('adminContent');
-    
-    content.innerHTML = `
-      <h2>Pending (${pending.length})</h2>
-      <div id="pendingList" style="margin-bottom: 40px;"></div>
-      <h2>Approved (${approved.length})</h2>
-      <div id="approvedList"></div>
-    `;
-    
-    const pendingDiv = document.getElementById('pendingList');
-    if (pending.length === 0) {
-      pendingDiv.innerHTML = '<p style="color: #888;">No photos pending</p>';
-    } else {
-      pendingDiv.innerHTML = pending.map((photo, idx) => `
-        <div class="admin-pending-item">
-          <img src="${photo.url}" class="admin-preview">
-          <div class="admin-info">
-            <div class="admin-date">${new Date(photo.date).toLocaleString()}</div>
-          </div>
-          <button onclick="approvePhoto(${idx})" class="admin-approve">Approve</button>
-          <button onclick="rejectPhoto(${idx})" class="admin-reject">Reject</button>
-        </div>
-      `).join('');
-    }
-    
-    const approvedDiv = document.getElementById('approvedList');
-    if (approved.length === 0) {
-      approvedDiv.innerHTML = '<p style="color: #888;">No approved photos</p>';
-    } else {
-      approvedDiv.innerHTML = approved.map((url, idx) => `
-        <div class="admin-approved-item">
-          <img src="${url}" class="admin-preview">
-          <div class="admin-info">
-            <div class="admin-date">Approved</div>
-          </div>
-          <button onclick="removeApprovedPhoto(${idx})" class="admin-remove">Remove</button>
-        </div>
-      `).join('');
-    }
-  }
-  
-  window.approvePhoto = (idx) => {
-    const pending = JSON.parse(localStorage.getItem('wifi_pending') || '[]');
-    const approved = JSON.parse(localStorage.getItem('wifi_approved') || '[]');
-    approved.push(pending[idx].url);
-    pending.splice(idx, 1);
-    localStorage.setItem('wifi_pending', JSON.stringify(pending));
-    localStorage.setItem('wifi_approved', JSON.stringify(approved));
-    renderAdminPanel();
-  };
-  
-  window.rejectPhoto = (idx) => {
-    const pending = JSON.parse(localStorage.getItem('wifi_pending') || '[]');
-    pending.splice(idx, 1);
-    localStorage.setItem('wifi_pending', JSON.stringify(pending));
-    renderAdminPanel();
-  };
-  
-  window.removeApprovedPhoto = (idx) => {
-    const approved = JSON.parse(localStorage.getItem('wifi_approved') || '[]');
-    approved.splice(idx, 1);
-    localStorage.setItem('wifi_approved', JSON.stringify(approved));
-    renderAdminPanel();
-  };
-  
-  // ========== ГАЛЕРЕЯ ==========
-  function renderGallery() {
-    const container = document.getElementById('gallery-grid');
-    if (!approvedPhotos.length) {
-      container.innerHTML = `<div class="empty-gallery" id="emptyGallery">${translations[currentLang].emptyGallery}</div>`;
-      return;
-    }
-    container.innerHTML = approvedPhotos.map(url => `
-      <div class="gallery-item">
-        <img src="${url}" alt="Community photo" loading="lazy">
-      </div>
-    `).join('');
-  }
-  
-  // ========== ЗАГРУЗКА ФОТО ==========
-  async function uploadPhoto(input) {
-    const file = input.files[0];
-    if (!file) return;
-    
-    if (file.size > 10 * 1024 * 1024) {
-      const statusDiv = document.getElementById('uploadStatus');
-      statusDiv.innerHTML = 'File too large. Maximum 10 MB.';
-      statusDiv.className = 'upload-status upload-error';
-      input.value = '';
-      return;
-    }
-    
-    const statusDiv = document.getElementById('uploadStatus');
-    statusDiv.innerHTML = translations[currentLang].uploading;
-    statusDiv.className = 'upload-status';
-    
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', UPLOAD_PRESET);
-    
+  let currentTab = 'moderation';
+
+  // Переключение темы (Dark / Light)
+  function toggleTheme() { document.body.classList.toggle('light'); }
+
+  // Работа с модальными окнами
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  // 1. ЗАГРУЗКА И ОТРИСОВКА ГАЛЕРЕИ ДЛЯ КЛИЕНТОВ
+  async function fetchGallery() {
+    const grid = document.getElementById('galleryGrid');
     try {
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      
-      if (data.secure_url) {
-        pendingPhotos.push({ url: data.secure_url, date: new Date().toISOString() });
-        localStorage.setItem('wifi_pending', JSON.stringify(pendingPhotos));
-        statusDiv.innerHTML = translations[currentLang].uploadSuccess;
-        statusDiv.className = 'upload-status upload-success';
-        setTimeout(() => closeUploadModal(), 2000);
-      } else {
-        throw new Error('Upload failed');
+      const res = await fetch(`${API_URL}api/photos`);
+      const photos = await res.json();
+      if(photos.length === 0) {
+        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; opacity:0.5; padding: 40px 0;">Галерея пока пуста. Будьте первым, кто предложит свой кадр!</p>';
+        return;
       }
-    } catch (error) {
-      statusDiv.innerHTML = translations[currentLang].uploadError;
-      statusDiv.className = 'upload-status upload-error';
+      grid.innerHTML = photos.map(p => `
+        <div class="gallery-item">
+          <img src="${API_URL}uploads/${p.filename}" alt="${p.title}" loading="lazy">
+          <div class="item-overlay">
+            <h4>${p.title}</h4>
+            <span style="font-size:12px; opacity:0.6;">${p.date}</span>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#ff3366; opacity:0.8; padding: 40px 0;">Ошибка подключения к Snapdragon-серверу на телефоне.</p>';
     }
-    input.value = '';
   }
-  
-  function openUploadModal() {
-    document.getElementById('uploadModal').classList.add('open');
-    document.getElementById('uploadStatus').innerHTML = '';
-  }
-  function closeUploadModal() {
-    document.getElementById('uploadModal').classList.remove('open');
-  }
-  
-  function toggleTheme() {
-    document.body.classList.toggle('light');
-    localStorage.setItem('wifi_theme', document.body.classList.contains('light') ? 'light' : 'dark');
-  }
-  
-  function scrollToAbout() {
-    document.getElementById('page-about').scrollIntoView({ behavior: 'smooth' });
-  }
-  
-  // Загрузка сохранённых настроек
-  if (localStorage.getItem('wifi_theme') === 'light') document.body.classList.add('light');
-  const savedLang = localStorage.getItem('wifi_lang');
-  if (savedLang === 'en') setLang('en');
-  else setLang('ru');
-  
-  renderGallery();
-  
-  function syncGallery() {
-    approvedPhotos = JSON.parse(localStorage.getItem('wifi_approved') || '[]');
-    renderGallery();
-  }
-  setInterval(syncGallery, 2000);
-  
-  // Анимация
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-  }, { threshold: 0.2 });
-  const aboutCard = document.getElementById('aboutCard');
-  if (aboutCard) observer.observe(aboutCard);
-  
-  // Закрытие dropdown при клике вне
-  document.addEventListener('click', (e) => {
-    const btn = document.getElementById('langBtn');
-    const dropdown = document.getElementById('langDropdown');
-    if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.classList.remove('open');
-    }
-    const adminBtn = document.getElementById('adminBtn');
-    const adminModal = document.getElementById('adminModal');
-    if (adminModal && adminBtn && !adminBtn.contains(e.target) && !adminModal.contains(e.target)) {
-      adminModal.classList.remove('open');
+
+  // 2. ОТПРАВКА ФОТО В ПРЕДЛОЖКУ ПОЛЬЗОВАТЕЛЕМ
+  document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('uploadSubmitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Загрузка...';
+
+    const formData = new FormData();
+    formData.append('title', document.getElementById('uploadTitle').value);
+    formData.append('photo', document.getElementById('uploadFile').files[0]);
+
+    try {
+      const res = await fetch(`${API_URL}api/upload/propose`, { method: 'POST', body: formData });
+      if(res.ok) { 
+        alert('Кадр успешно отправлен на модерацию! Я проверю его и опубликую, если всё хорошо.'); 
+        closeModal('uploadModal'); 
+        document.getElementById('uploadForm').reset(); 
+      } else {
+        alert('Не удалось отправить файл. Проверьте размер и тип.');
+      }
+    } catch (err) { 
+      alert('Нет связи с сервером. Проверьте запуск UserLAnd на телефоне.'); 
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = 'Отправить на модерацию';
     }
   });
-</script>
-</body>
-</html>
+
+  // 3. ОТПРАВКА ЗАЯВКИ НА СЪЕМКУ В TELEGRAM ЧЕРЕЗ ТЕЛЕФОН
+  document.getElementById('orderForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('orderSubmitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Отправка...';
+
+    const data = {
+      name: document.getElementById('orderName').value,
+      tgUsername: document.getElementById('orderTg').value,
+      message: document.getElementById('orderMsg').value
+    };
+    try {
+      const res = await fetch(`${API_URL}api/order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if(res.ok) { 
+        alert('Заявка успешно доставлена на телефон автора и перенаправлена в Telegram!'); 
+        closeModal('orderModal'); 
+        document.getElementById('orderForm').reset(); 
+      } else {
+        alert('Произошла ошибка при регистрации заявки.');
+      }
+    } catch (err) { 
+      alert('Ошибка соединения с сервером.'); 
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = 'Отправить заявку';
+    }
+  });
+
+  // 4. ДОСТУП В АДМИН-ПАНЕЛЬ
+  function openAdmin() {
+    if(localStorage.getItem('admin_pass')) { showPanel(); } 
+    else { openModal('adminModal'); }
+  }
+  
+  async function loginAdmin() {
+    const pass = document.getElementById('adminPassword').value;
+    try {
+      const res = await fetch(`${API_URL}api/admin/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pass })
+      });
+      if(res.ok) { 
+        localStorage.setItem('admin_pass', pass); 
+        showPanel(); 
+      } else { 
+        alert('Неверный мастер-пароль доступа!'); 
+      }
+    } catch (err) { 
+      alert('Сервер недоступен. Проверьте туннель localtunnel.'); 
+    }
+  }
+
+  function showPanel() {
+    document.getElementById('adminAuthCard').style.display = 'none';
+    document.getElementById('adminPanelCard').style.display = 'block';
+    openModal('adminModal');
+    loadAdminData();
+  }
+
+  function logoutAdmin() { 
+    localStorage.removeItem('admin_pass'); 
+    location.reload(); 
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tabModBtn').classList.toggle('active', tab === 'moderation');
+    document.getElementById('tabMainBtn').classList.toggle('active', tab === 'main');
+    loadAdminData();
+  }
+
+  // 5. ПОЛУЧЕНИЕ И ОТРИСОВКА СПИСКОВ В АДМИНКЕ
+  async function loadAdminData() {
+    const list = document.getElementById('adminList');
+    const pass = localStorage.getItem('admin_pass');
+    
+    if (currentTab === 'moderation') {
+      try {
+        const res = await fetch(`${API_URL}api/admin/moderation-list`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pass })
+        });
+        const photos = await res.json();
+        if(photos.length === 0) { 
+          list.innerHTML = '<p style="opacity:0.5; text-align:center; padding:20px;">Предложка абсолютно пуста.</p>'; 
+          return; 
+        }
+        
+        list.innerHTML = photos.map(p => `
+          <div class="admin-item">
+            <img src="${API_URL}uploads/${p.filename}">
+            <div class="admin-item-info">
+              <h5>${p.title}</h5>
+              <span style="font-size:11px; opacity:0.5;">Предложено: ${p.date}</span>
+            </div>
+            <div class="btn-group">
+              <button class="adm-btn btn-approve" onclick="approvePhoto(${p.id})">Одобрить</button>
+              <button class="adm-btn btn-reject" onclick="rejectPhoto(${p.id})">Стереть</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = '<p style="color:#ef4444; text-align:center; padding:20px;">Ошибка загрузки списка предложки.</p>';
+      }
+    } else {
+      try {
+        const res = await fetch(`${API_URL}api/photos`);
+        const photos = await res.json();
+        if(photos.length === 0) { 
+          list.innerHTML = '<p style="opaci
